@@ -1,0 +1,27 @@
+{
+	"name": "mws-restaurant-reviews",
+	"version": "0.1.0",
+	"scripts": {
+		"start": "gulp"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.1.2",
+		"@babel/preset-env": "^7.1.0",
+		"@babel/register": "^7.0.0",
+		"babel": "^6.23.0",
+		"babel-register": "^6.26.0",
+		"babelify": "^10.0.0",
+		"browser-sync": "^2.26.3",
+		"browserify": "^16.2.3",
+		"del": "^3.0.0",
+		"gulp": "^3.9.1",
+		"gulp-responsive": "^2.11.0",
+		"merge-stream": "^1.0.1",
+		"run-sequence": "^2.2.1",
+		"vinyl-source-stream": "^2.0.0",
+		"watchify": "^3.11.0"
+	},
+	"dependencies": {
+		"idb": "^2.1.3"
+	}
+}
