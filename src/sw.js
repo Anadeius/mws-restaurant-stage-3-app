@@ -1,3 +1,5 @@
+import syncHandler from './js/syncHandler.js'
+
 const restaurantReviewsCacheName = 'restaurantReviews-static-002';
 const imgsCacheName = 'restaurantReviews-images-002'; 
 
@@ -52,12 +54,12 @@ const cachedImage = (request) => {
     });
 }
 
-/* self.addEventListener('sync', (event) => {
+self.addEventListener('sync', (event) => {
 	if (event.tag == 'syncOfflineFavorites'){
-		event.waitUntil(syncHandler.syncOfflineFavorites().then({}));
+		event.waitUntil(syncHandler.syncOfflineFavorites());
 	}
 
 	if(event.tag == 'syncOfflineReviews'){
-		event.waitUntil(syncHandler.syncOfflineReviews().then({}));
+		event.waitUntil(syncHandler.syncOfflineReviews());
 	}
-}); */
+}); 

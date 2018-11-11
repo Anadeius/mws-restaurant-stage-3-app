@@ -1,7 +1,7 @@
 import idb from 'idb';
 
 const dbPromise = {
-	db: idb.open('restaurant-db', 3, (upgradeDB) => {
+	db: idb.open('restaurant-db', 4, (upgradeDB) => {
 		switch(upgradeDB.oldVersion) {
 			case 0:
 				let restaurantStore = upgradeDB.createObjectStore('restaurants', { keyPath : 'id' });
@@ -10,7 +10,8 @@ const dbPromise = {
 				reviewStore.createIndex('restaurant_id', 'restaurant_id');
 			case 2:
 				let offlineFavoritesStore = upgradeDB.createObjectStore('offlineFavorites', { keyPath : 'id'});
-				let offlineReviewsStore = upgradeDB.createObjectStore('offlineReviews', { keypath: 'id', autoIncrement: true });
+			case 3:
+				let offlineReviewsStore = upgradeDB.createObjectStore('offlineReviews', { keyPath: 'id', autoIncrement: true });
 				offlineReviewsStore.createIndex('restaurant_id', 'restaurant_id');
 		}
 	}),

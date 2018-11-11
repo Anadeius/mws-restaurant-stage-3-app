@@ -171,7 +171,16 @@ export default class DBHelper {
 		.then((response) => response.json())
 		.then((reviews) => {
 			dbPromise.storeReviews(reviews);
-			callback(null, reviews);
+			dbPromise.db.then((db) => {
+				const offlineReviewsStore = db.transaction('offlineReviews').objectStore('offlineReviews');
+				const offlineReviewsStoreIndex = offlineReviewsStore.index('restaurant_id');
+
+				offlineReviewsStoreIndex.getAll(restaurant_id).then((offlineReviews) => {
+					if(!offlineReviews) offlineReviews = [];
+					let combinedReviews = reviews.concat(offlineReviews);
+					callback(null, combinedReviews);
+				});
+			});
 		}).catch((err) => {
 			console.log(`Error fetching Reviews, Error Code: ${err}.`);
 			console.log(`Attempting to pull from IndexedDB`);
@@ -179,11 +188,21 @@ export default class DBHelper {
 				if(!dbReviews){
 					callback(err, null);
 				}
-				callback(null, dbReviews);
+				dbPromise.db.then((db) => {
+					const offlineReviewsStore = db.transaction('offlineReviews').objectStore('offlineReviews');
+					const offlineReviewsStoreIndex = offlineReviewsStore.index('restaurant_id');
+	
+					offlineReviewsStoreIndex.getAll(restaurant_id).then((offlineReviews) => {
+						console.log(dbReviews);
+						console.log(offlineReviews);
+						if(!offlineReviews) offlineReviews = [];
+						let combinedReviews = dbReviews.concat(offlineReviews);
+						callback(null, combinedReviews);
+					});
+				});
 			}));
 		});
-  }
-  
+	}
 
   /**
    * Restaurant page URL.

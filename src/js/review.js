@@ -76,7 +76,7 @@ const submitNewReview = (e) => {
 
 	console.log(`Submitted Review Data Object: ${submittedReview}`);
 
-	return fetch(`${DBHelper.REVIEWS_URL}`, { method: 'POST', body: JSON.stringify(submittedReview) })
+	/* return fetch(`${DBHelper.REVIEWS_URL}`, { method: 'POST', body: JSON.stringify(submittedReview) })
 			.then((response) => response.json())
 			.then((reviewSubmission) => {
 				dbPromise.storeReviews(reviewSubmission);
@@ -86,7 +86,27 @@ const submitNewReview = (e) => {
 				reviewList.appendChild(review);
 
 				document.getElementById('review-submission-form').reset();
-			});
+			}); */
+
+	return dbPromise.db.then((db) => {
+		const offlineReviewsStore = db.transaction('offlineReviews', 'readwrite').objectStore('offlineReviews');
+		offlineReviewsStore.put(submittedReview);
+		return offlineReviewsStore.complete;
+	}).then(() => {
+		navigator.serviceWorker.ready.then((worker) => {
+			worker.sync.register('syncOfflineReviews');
+		}).catch((err) => {
+			console.log(`Could not register Offline Reviews Sync. Error: ${err}`);
+		});
+
+		const reviewList = document.getElementById('reviews-list');
+		const review = createReviewHTML(submittedReview);
+		reviewList.appendChild(review)
+
+		document.getElementById('review-submission-form').reset();
+
+		return;
+	});
 };
 
 export default function reviewForm(restaurantID) {
