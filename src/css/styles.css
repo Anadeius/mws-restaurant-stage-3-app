@@ -105,6 +105,25 @@ nav h1 a {
   width: 100%;
   background-color: #ccc;
 }
+
+/* ====================== Restaurant Favorite Button ====================== */
+
+.favorite {
+	display: inline-block;
+    font-size: 1.5rem;
+	margin-left: 50px;
+	margin-bottom: 2px;
+	vertical-align: bottom;
+}
+
+.favorite[aria-pressed=true] {
+	color: red;
+}
+
+#favButtonContainer {
+	display: inline-block;
+}
+
 /* ====================== Restaurant Filtering ====================== */
 .filter-options {
   width: 100%;
@@ -221,6 +240,7 @@ nav h1 a {
   margin: 15px 0 30px;
   text-transform: uppercase;
   line-height: 1.1;
+  display: inline-block;
 }
 #restaurant-img {
 	width: 90%;
@@ -241,14 +261,14 @@ nav h1 a {
   text-transform: uppercase;
 	width: 90%;
 }
-#restaurant-container, #reviews-container {
+#restaurant-container, #reviews-container, #reviews-submission-container {
   display:inline-block;
   border-bottom: 1px solid #d9d9d9;
   border-top: 1px solid #fff;
   padding: 140px 30px 30px;
   width: 50%;
 }
-#reviews-container {
+#reviews-container, #reviews-submission-container {
   padding: 30px 40px 80px;
 }
 #reviews-container h2 {
@@ -318,6 +338,28 @@ nav h1 a {
   padding: 0 20px 20px;
 }
 
+/* ====================== Review Submission Form ====================== */
+
+form>textarea, form>button {
+	display: block;
+	width: 80%;
+	margin-bottom: 10px;
+}
+
+#reviewName {
+	width: 45%;
+	margin-bottom: 10px;
+	display: inline-block;
+}
+
+#reviewRating {
+	display: inline-block;
+	width: 20%;
+}
+
+label {
+	margin: 0 5px 0 7px;
+}
 
 /* ====================== Mobile Responsive Adjustments ====================== */
 
@@ -355,7 +397,7 @@ nav h1 a {
     order: 1;
   }
 
-  #restaurant-container, #reviews-container {
+  #restaurant-container, #reviews-container, #reviews-submission-container {
     width:100%;
   }
 
@@ -373,8 +415,25 @@ nav h1 a {
     order: 3;
   }
 
+  #reviews-submission-container {
+	order: 4;
+  }
+
   #reviews-list li {
     width: 100%;
+  }
+  .favorite {
+	  margin-left: 0;
+  }
+
+  form>input, form>select, form>textarea, form>button, #reviewName, #reviewRating {
+	display: block;
+	width: 100%;
+	margin-bottom:10px;
+  }
+
+  label {
+	  margin: unset;
   }
 
 }

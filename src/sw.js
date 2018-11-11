@@ -10,8 +10,7 @@ self.addEventListener('install', (event) => {
                 '/css/styles.css',
                 '/js/main.js',
 				'/js/restaurant.js',
-				'/manifest.json',
-				
+				'/manifest.json',				
             ]);
         }).catch((err) => {
             console.log("Cache error while opening: " + err);
@@ -52,3 +51,13 @@ const cachedImage = (request) => {
         });
     });
 }
+
+/* self.addEventListener('sync', (event) => {
+	if (event.tag == 'syncOfflineFavorites'){
+		event.waitUntil(syncHandler.syncOfflineFavorites().then({}));
+	}
+
+	if(event.tag == 'syncOfflineReviews'){
+		event.waitUntil(syncHandler.syncOfflineReviews().then({}));
+	}
+}); */

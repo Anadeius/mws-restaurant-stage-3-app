@@ -1,4 +1,6 @@
 import DBHelper from './dbhelper';
+import favorite from './favorite';
+import reviewForm from './review';
 import './swRegistration';
 
 let restaurant;
@@ -19,21 +21,27 @@ const initMap = () => {
     if (error) { // Got an error!
       console.error(error);
     } else {      
-      newMap = L.map('map', {
-        center: [restaurant.latlng.lat, restaurant.latlng.lng],
-        zoom: 16,
-        scrollWheelZoom: false
-      });
-      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
-        mapboxToken: 'pk.eyJ1IjoiYW5hZGVpdXMiLCJhIjoiY2ppYjNuanIwMWJpZTNxcDA0ZDRycWUzcSJ9.J04L0DyrznwmlrAfh7RBqw',
-        maxZoom: 18,
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-          '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-          'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        id: 'mapbox.streets'    
-      }).addTo(newMap);
-      fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, newMap);
+	   if(navigator.onLine) {
+		try {	  
+			newMap = L.map('map', {
+      		  center: [restaurant.latlng.lat, restaurant.latlng.lng],
+      		  zoom: 16,
+      		  scrollWheelZoom: false
+      		});
+      		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
+      		  mapboxToken: 'pk.eyJ1IjoiYW5hZGVpdXMiLCJhIjoiY2ppYjNuanIwMWJpZTNxcDA0ZDRycWUzcSJ9.J04L0DyrznwmlrAfh7RBqw',
+      		  maxZoom: 18,
+      		  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+      		    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+      		    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      		  id: 'mapbox.streets'    
+			  }).addTo(newMap);
+			  DBHelper.mapMarkerForRestaurant(self.restaurant, newMap);
+		} catch(err) {
+			console.log(`Error initializing map, Error: ${err}`);
+		}
+	}
+    fillBreadcrumb(); 
     }
   });
 }  
@@ -70,6 +78,9 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
+  const favButtonContainer = document.getElementById('favButtonContainer');
+  favButtonContainer.append(favorite(restaurant));
+
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
 
@@ -86,7 +97,10 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
     fillRestaurantHoursHTML();
   }
   // fill reviews
-  fillReviewsHTML();
+  DBHelper.fetchReviewsByRestaurantID(restaurant.id, (error, reviews) => {
+	  self.reviews = reviews;
+	  fillReviewsHTML();
+  });
 }
 
 /**
@@ -113,7 +127,7 @@ const fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hour
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+const fillReviewsHTML = (reviews = self.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
@@ -126,11 +140,19 @@ const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     container.appendChild(noReviews);
     return;
   }
+  
   const ul = document.getElementById('reviews-list');
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
   container.appendChild(ul);
+
+  const submissionContainer = document.getElementById('reviews-submission-container');
+  const h3 = document.createElement('h3');
+  h3.innerHTML = "Submit a Review";
+  submissionContainer.appendChild(h3);
+  const id = getParameterByName('id');
+  submissionContainer.appendChild(reviewForm(id));
 }
 
 /**
@@ -151,7 +173,7 @@ const createReviewHTML = (review) => {
 
   const date = document.createElement('p');
   date.className = "review-date";
-  date.innerHTML = review.date;
+  date.innerHTML = new Date(review.createdAt).toLocaleDateString();
   date.tabIndex = 0;
   section.appendChild(date);
 

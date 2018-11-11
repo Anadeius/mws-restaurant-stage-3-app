@@ -7,12 +7,22 @@ export default class DBHelper {
 
   /**
    * Database URL.
-   * Change this to restaurants.json file location on your server.
+   * Returns URL for connecting to API server 
    */
   static get DATABASE_URL() {
     const port = 1337 // Change this to your server port
     return `http://localhost:${port}/restaurants`;
   }
+
+  /** 
+   * Reviews URL
+   * Returns reviews for a specified restaurant
+  */
+  static get REVIEWS_URL() {
+	  const port = 1337;
+	  return `http://localhost:${port}/reviews`;
+  }
+  
 
   /**
    * Fetch all restaurants.
@@ -51,6 +61,7 @@ export default class DBHelper {
 		}).catch((err) =>{
 			console.log(`Error fetching Restaurant ${id}, Error Code: ${err}`);
 			console.log(`Attempting to pull from IndexedDB`);
+			console.log(id);
 			dbPromise.retrieveRestaurants(id).then((dbRestaurant) => {
 				if(!dbRestaurant) {
 					callback('No Restaurants found', null);
@@ -153,6 +164,28 @@ export default class DBHelper {
   }
 
   /**
+   * Fetch all reviews for a given restaurant by id
+   */
+  static fetchReviewsByRestaurantID(restaurant_id, callback){
+	fetch(`${DBHelper.REVIEWS_URL}/?restaurant_id=${restaurant_id}`)
+		.then((response) => response.json())
+		.then((reviews) => {
+			dbPromise.storeReviews(reviews);
+			callback(null, reviews);
+		}).catch((err) => {
+			console.log(`Error fetching Reviews, Error Code: ${err}.`);
+			console.log(`Attempting to pull from IndexedDB`);
+			dbPromise.retrieveReviews(restaurant_id).then((dbReviews => {
+				if(!dbReviews){
+					callback(err, null);
+				}
+				callback(null, dbReviews);
+			}));
+		});
+  }
+  
+
+  /**
    * Restaurant page URL.
    */
   static urlForRestaurant(restaurant) {
@@ -179,15 +212,5 @@ export default class DBHelper {
       marker.addTo(map);
     return marker;
   } 
-  /* static mapMarkerForRestaurant(restaurant, map) {
-    const marker = new google.maps.Marker({
-      position: restaurant.latlng,
-      title: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant),
-      map: map,
-      animation: google.maps.Animation.DROP}
-    );
-    return marker;
-  } */
 
 }

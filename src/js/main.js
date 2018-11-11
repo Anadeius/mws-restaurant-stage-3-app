@@ -1,4 +1,5 @@
 import DBHelper from './dbhelper';
+import favorite from './favorite';
 import './swRegistration';
 
 let restaurants,
@@ -75,20 +76,25 @@ const fillCuisinesHTML = (cuisines = self.cuisines) => {
  * Initialize leaflet map, called from HTML.
  */
 const initMap = () => {
-  newMap = L.map('map', {
-        center: [40.722216, -73.987501],
-        zoom: 12,
-        scrollWheelZoom: false
-      });
-  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
-    mapboxToken: 'pk.eyJ1IjoiYW5hZGVpdXMiLCJhIjoiY2ppYjNuanIwMWJpZTNxcDA0ZDRycWUzcSJ9.J04L0DyrznwmlrAfh7RBqw',
-    maxZoom: 18,
-    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-      '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-      'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    id: 'mapbox.streets'
-  }).addTo(newMap);
-
+  if(navigator.onLine) {
+	try{  
+		newMap = L.map('map', {
+  		      center: [40.722216, -73.987501],
+  		      zoom: 12,
+  		      scrollWheelZoom: false
+  		    });
+  		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
+  		  mapboxToken: 'pk.eyJ1IjoiYW5hZGVpdXMiLCJhIjoiY2ppYjNuanIwMWJpZTNxcDA0ZDRycWUzcSJ9.J04L0DyrznwmlrAfh7RBqw',
+  		  maxZoom: 18,
+  		  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+  		    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+  		    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+  		  id: 'mapbox.streets'
+  		}).addTo(newMap);
+	} catch(err) {
+		console.log(`Failed to initialize Leaflet Map, Error Message: ${err}`);
+	}
+  }
   updateRestaurants();
 }
 
@@ -190,6 +196,9 @@ const createRestaurantHTML = (restaurant) => {
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more)
 
+  const favoriteButton = favorite(restaurant);
+  li.append(favoriteButton);
+
   return li
 }
 
@@ -197,7 +206,8 @@ const createRestaurantHTML = (restaurant) => {
  * Add markers for current restaurants to the map.
  */
 const addMarkersToMap = (restaurants = self.restaurants) => {
-  restaurants.forEach(restaurant => {
+   if(!newMap || !L ) return; // For offline application, leaflet is not cached/loaded, so markers shouldn't attempt to be placed.
+   restaurants.forEach(restaurant => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, newMap);
     marker.on("click", onClick);
