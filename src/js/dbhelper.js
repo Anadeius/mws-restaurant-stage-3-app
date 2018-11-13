@@ -1,5 +1,17 @@
 import dbPromise from './dbHandler';
 
+const image_alt_tags = {
+	1: "This is a picture of a party enjoying a meal at Mission Chinese Food",
+	2: "This is a picture of a toasty pizza fresh out of the oven from Emily's",
+	3: "This is a picture of the empty, wooden tables inside of Kang Ho Dong Baekjeong restaurant",
+	4: "This is a picture of the outside storefront of Katz's Delicatessen",
+	5: "This is a view across the crowded tables of Roberta's Pizza, facing the kitchen",
+	6: "This is a picture of Hometwon BBQ, full of occupied tables",
+	7: "This is a black and white photograph of the Superiority Burger storefront",
+	8: "This is a photograph of The Dutch's front entrance",
+	9: "This is a black and white picture of couples enjoying a meal at Mu Ramen",
+	10: "This is a picture of the empty inside of Casa Enrique in front of the bar"
+  }
 /**
  * Common database helper functions.
  */
@@ -217,6 +229,11 @@ export default class DBHelper {
   static imageUrlForRestaurant(restaurant) {
     return (`/images/${restaurant.photograph ? restaurant.photograph : restaurant.id}`);
   }
+
+  static imageAltCode(restaurant_id) {
+	  return image_alt_tags[restaurant_id];
+  }
+
 
   /**
    * Map marker for a restaurant.
