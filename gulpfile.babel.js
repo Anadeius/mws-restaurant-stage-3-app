@@ -6,7 +6,6 @@ import watchify from 'watchify';
 import del from 'del';
 import source from 'vinyl-source-stream';
 import mergeStream from 'merge-stream';
-import runSequence from 'run-sequence';
 
 const browserSync = require('browser-sync').create();
 
@@ -15,7 +14,7 @@ gulp.task('clean', (done) => {
 	return del('./dist', done);
 });
 
-gulp.task('copy', () => {
+gulp.task('copy', (done) => {
 	/* Copy CSS files */
 	gulp.src('./src/css/*.css').pipe(gulp.dest('./dist/css/'));
 	/* Copy HTML files */
@@ -24,6 +23,8 @@ gulp.task('copy', () => {
 	gulp.src('./src/img/icons/*.png').pipe(gulp.dest('./dist/images/'));
 	/* Copy Manifest file */
 	gulp.src('./src/manifest.json').pipe(gulp.dest('./dist'));
+
+	done();
 });
 
 /* Create Responsive Images from img directory */
@@ -45,10 +46,6 @@ gulp.task('responsive-images', () => {
 			}]
 		},))
 		.pipe(gulp.dest('./dist/images'));
-});
-
-gulp.task('build', (done) => {
-	return runSequence('clean', ['bundleJS', 'responsive-images'], 'copy', done)
 });
 
 /* JS Bundling Logic from Jake Archibald's Wittr Application Gulpfile
@@ -96,7 +93,7 @@ gulp.task('bundleJS', function () {
 	);
 });
 
-gulp.task('dev', ['build'], () => {
+gulp.task('dev', gulp.series('clean', 'bundleJS', 'responsive-images', 'copy'), () => {
 	browserSync.init({
 		port: 8080,
 		server: { baseDir: './dist' }
@@ -113,7 +110,7 @@ gulp.task('dev', ['build'], () => {
 	  });
 });
 
-gulp.task('default', ['build'], () => {
+gulp.task('default', gulp.series('clean', 'bundleJS', 'responsive-images', 'copy'), () => {
 	browserSync.init({
 		port: 8080,
 		server: { baseDir: './dist' }
