@@ -18,12 +18,32 @@ const image_alt_tags = {
 export default class DBHelper {
 
   /**
-   * Database URL.
+   * Development Database URL.
+   * Returns URL for connecting to API server 
+   */
+  static get DEV_DATABASE_URL() {
+    const port = 1337 // Change this to your server port
+    return `http://localhost:${port}/restaurants`;
+  }
+
+
+  /**
+   * Development Database URL.
    * Returns URL for connecting to API server 
    */
   static get DATABASE_URL() {
     const port = 1337 // Change this to your server port
-    return `http://localhost:${port}/restaurants`;
+    return `http://rreviews-api.herokuapp.com/restaurants`;
+  }
+
+
+  /** 
+   * Reviews URL
+   * Returns reviews for a specified restaurant
+   */
+  static get DEV_REVIEWS_URL() {
+	const port = 1337;
+	return `http://localhost:${port}/reviews`;
   }
 
   /** 
@@ -32,7 +52,7 @@ export default class DBHelper {
   */
   static get REVIEWS_URL() {
 	  const port = 1337;
-	  return `http://localhost:${port}/reviews`;
+	  return `http:/rreviews-api.herokuapp.com/reviews`;
   }
   
 
@@ -220,7 +240,7 @@ export default class DBHelper {
    * Restaurant page URL.
    */
   static urlForRestaurant(restaurant) {
-    return (`./restaurant.html?id=${restaurant.id}`);
+    return (`./restaurants/${restaurant.id}`);
   }
 
   /**

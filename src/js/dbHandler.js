@@ -29,7 +29,6 @@ const dbPromise = {
 	},
 
 	storeRestaurants(restaurants) {
-		if(!Array.isArray(restaurants)) restaurants = [restaurants];
 		return this.db.then(db => {
 			console.log('DB Connected');
 			let store = db.transaction('restaurants', 'readwrite').objectStore('restaurants');
@@ -58,7 +57,6 @@ const dbPromise = {
 	},
 	
 	storeReviews(reviews) {
-		if(!Array.isArray(reviews)) reviews = [reviews];
 		return this.db.then(db => {
 			console.log('DB Connected');
 			let store = db.transaction('reviews', 'readwrite').objectStore('reviews');
