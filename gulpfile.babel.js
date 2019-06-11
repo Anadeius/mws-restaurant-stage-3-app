@@ -93,6 +93,10 @@ gulp.task('bundleJS', function () {
 	);
 });
 
+gulp.task('build', gulp.series('clean', 'bundleJS', 'responsive-images', 'copy'), () => {
+	
+});
+
 gulp.task('dev', gulp.series('clean', 'bundleJS', 'responsive-images', 'copy'), () => {
 	browserSync.init({
 		port: 8080,
